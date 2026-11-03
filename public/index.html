@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>NotaAI — AI Notepad & Roadmap Maker</title>
+<style>
+:root{--bg:#f5f5f7;--panel:#fff;--side:#fff;--line:#e5e7eb;--text:#171717;--muted:#737373;--acc:#6d28d9;--acc2:#5b21b6;--soft:#ede9fe;--ok:#16a34a;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+html,body{height:100%}*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
+button,input,textarea,select{font:inherit;color:inherit}button{cursor:pointer;border:0;background:none}
+.app{height:100%;display:flex;overflow:hidden}
+.side{width:290px;background:var(--side);border-right:1px solid var(--line);display:flex;flex-direction:column;flex-shrink:0}
+.brand{display:flex;gap:10px;align-items:center;padding:16px 18px;font-weight:800;font-size:18px}
+.logo{width:52px;height:52px;border-radius:12px;background:linear-gradient(135deg,#8b5cf6,#5b21b6);display:grid;place-items:center;color:#fff}
+.sb{padding:0 12px 12px;overflow:auto;flex:1}
+.in{width:100%;height:38px;border:1px solid var(--line);border-radius:10px;background:var(--panel);padding:0 12px;outline:0}
+.in:focus,textarea:focus{border-color:#a78bfa;box-shadow:0 0 0 3px #8b5cf633}
+.btn{background:var(--acc);color:#fff;border-radius:10px;padding:9px 14px;font-weight:700}.btn:hover{background:var(--acc2)}.btn:disabled{opacity:.5;cursor:wait}
+.ghost{border:1px solid var(--line);border-radius:8px;padding:6px 10px;color:var(--muted);font-size:13px}.ghost:hover{color:var(--text);background:var(--bg)}
+.nav{display:flex;width:100%;gap:8px;align-items:center;text-align:left;padding:8px 10px;border-radius:8px;color:var(--muted);font-size:14px}
+.nav:hover{background:var(--soft)}.nav.on{background:var(--soft);color:var(--acc);font-weight:700}.nav i{margin-left:auto;font-style:normal;font-size:11px}
+.sec{display:flex;justify-content:space-between;margin:18px 8px 6px;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.note{display:block;width:100%;text-align:left;padding:9px 10px;border-radius:8px;margin-bottom:2px}.note:hover,.note.on{background:var(--soft)}
+.note b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.note small{color:var(--muted);font-size:12px}
+.main{flex:1;min-width:0;display:flex;flex-direction:column;background:var(--panel)}
+.top{display:flex;gap:8px;align-items:center;padding:12px 24px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.tabs{display:flex;gap:4px;background:var(--bg);padding:4px;border-radius:11px}
+.tab{padding:7px 14px;border-radius:8px;font-weight:600;color:var(--muted);font-size:14px}.tab.on{background:var(--panel);color:var(--acc);box-shadow:0 1px 4px #0001}
+.sp{flex:1}.stat{font-size:12px;color:var(--muted)}
+.wrap{flex:1;overflow:auto;padding:32px 6vw 70px}.col{max-width:860px;margin:auto}
+.title{width:100%;border:0;outline:0;background:none;font-size:36px;font-weight:800;letter-spacing:-.04em}
+textarea.body{width:100%;min-height:55vh;border:0;outline:0;background:none;resize:none;font-size:16.5px;line-height:1.8}
+.tools{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 18px;align-items:center;color:var(--muted);font-size:12px}
+.card{border:1px solid var(--line);border-radius:14px;padding:16px;background:var(--panel)}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}.row .in{flex:1;min-width:200px}
+.md h1,.md h2,.md h3{margin:18px 0 6px;letter-spacing:-.02em}.md h2{font-size:19px}.md h3{font-size:16px}.md ul{padding-left:20px}.md p{margin:6px 0}
+.tl{position:relative;padding-left:30px}.tl:before{content:"";position:absolute;left:10px;top:8px;bottom:8px;width:2px;background:var(--line)}
+.ph{position:relative;margin-bottom:16px}.ph:before{content:attr(data-n);position:absolute;left:-30px;top:12px;width:22px;height:22px;border-radius:50%;background:var(--acc);color:#fff;font-size:12px;font-weight:800;display:grid;place-items:center}
+.ph h3{margin:0;font-size:17px}.dur{display:inline-block;background:var(--soft);color:var(--acc);border-radius:99px;padding:2px 10px;font-size:12px;font-weight:700;margin-left:8px}
+.task{display:flex;gap:9px;align-items:flex-start;padding:4px 0}.task.d span{text-decoration:line-through;color:var(--muted)}
+.ms{margin-top:8px;font-size:13px;color:var(--ok);font-weight:600}
+.bar{height:8px;background:var(--bg);border-radius:9px;overflow:hidden;margin:8px 0 22px}.bar div{height:100%;background:linear-gradient(90deg,#8b5cf6,#5b21b6);transition:.3s}
+.chat{display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
+.msg{padding:10px 14px;border-radius:14px;max-width:85%}.msg.u{align-self:flex-end;background:var(--acc);color:#fff}.msg.a{background:var(--bg)}
+.muted{color:var(--muted)}.empty{text-align:center;padding:50px 10px;color:var(--muted)}
+.toast{position:fixed;right:20px;bottom:calc(20px + env(safe-area-inset-bottom,0px));background:#171717;color:#fff;padding:10px 14px;border-radius:9px;font-size:13px;opacity:0;transition:.2s;pointer-events:none}.toast.show{opacity:1}
+.menu{display:none}
+@media(max-width:760px){.side{display:none}.menu{display:inline-block}.side.open{display:flex;position:fixed;inset:0 25% 0 0;z-index:5;box-shadow:0 0 60px #0006}.top{padding:10px 12px}.title{font-size:28px}}
+</style></head>
+<body><div class="app">
+<aside class="side" id="side">
+ <div class="brand"><div class="logo">♪</div>NotaAI</div>
+ <div class="sb">
+  <input class="in" id="q" placeholder="Search notes…" aria-label="Search notes">
+  <button class="btn" id="nn" style="width:100%;margin:12px 0 6px">＋ New note</button>
+  <button class="nav on" data-v="all">▤ All notes <i id="c-all"></i></button>
+  <button class="nav" data-v="pin">★ Pinned <i id="c-pin"></i></button>
+  <div class="sec"><span>Folders</span><button id="af" title="Add folder">＋</button></div>
+  <div id="fl"></div>
+  <div class="sec"><span>Notes</span></div>
+  <div id="nl"></div>
+ </div>
+ <div class="top" style="border-top:1px solid var(--line);border-bottom:0;padding:10px 14px"><span class="stat">Saved in this browser</span></div>
+</aside>
+<main class="main">
+ <div class="top">
+  <button class="ghost menu" id="mb">☰</button>
+  <div class="tabs" role="tablist"><button class="tab on" data-t="write">Note</button><button class="tab" data-t="sum">Summary</button><button class="tab" data-t="road">Roadmap</button><button class="tab" data-t="chat">Chat</button></div>
+  <span class="sp"></span><span class="stat" id="st">Saved</span>
+  <button class="ghost" id="pn">☆ Pin</button><button class="ghost" id="ex">Export .md</button><button class="ghost" id="del">Delete</button>
+ </div>
+ <div class="wrap"><div class="col" id="view"></div></div>
+</main></div><div class="toast" id="toast"></div>
+<script>
+const K='notaai-v1',API='https://api.restful-api.dev/objects',APP_ID='125ff438-4b4c-40bd-8815-5e10dcbd1920',$=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=()=>Math.random().toString(36).slice(2,10)+Date.now().toString(36);
+let S;try{S=JSON.parse(localStorage.getItem(K)||'null')}catch(e){}
+S=S||{notes:[{id:uid(),title:'Launch my podcast',body:'I want to launch a weekly interview podcast about indie game development.\n\nIdeas:\n- Find 10 guests\n- Pick hosting platform\n- Record 3 pilot episodes\n\nOpen the Roadmap tab and press Generate to turn this into a step-by-step plan.',folder:'Personal',pinned:true,updated:Date.now(),chat:[]}],folders:['Personal','Work'],theme:'auto'};
+S.view='all';S.tab='write';S.active=S.notes[0]?.id;
+let busy=false;
+const apiData=n=>({appId:APP_ID,title:n.title,body:n.body,folder:n.folder,pinned:n.pinned,updated:n.updated,summary:n.summary||'',goal:n.goal||'',tf:n.tf||'',roadmap:n.roadmap||null,chat:n.chat||[],chatDraft:n.chatDraft||''});
+const fromApi=o=>({id:String(o.id),...(o.data||{}),title:o.name||o.data?.title||'Untitled note',body:o.data?.body||'',folder:o.data?.folder||'Personal',pinned:!!o.data?.pinned,updated:o.data?.updated||Date.now(),chat:o.data?.chat||[]});
+async function api(path='',options={}){const r=await fetch(API+path,{headers:{'Content-Type':'application/json',...(options.headers||{})},...options});if(!r.ok)throw new Error(`Notes API error (${r.status})`);return r.status===204?null:r.json()}
+async function syncNotes(){try{const remote=(await api()).filter(o=>o.data?.appId===APP_ID);if(remote.length){S.notes=remote.map(fromApi);S.active=S.notes[0]?.id;S.folders=[...new Set(['Personal','Work',...S.notes.map(n=>n.folder).filter(Boolean)])];save();if(!(S.tab==='chat'&&document.activeElement?.id==='ci'))render();$('#st').textContent='Synced';return true}$('#st').textContent='Ready'}catch(e){$('#st').textContent='Offline mode'}return false}
+async function createRemote(n){try{const o=await api('',{method:'POST',body:JSON.stringify({name:n.title||'Untitled note',data:apiData(n)})});if(o?.id){n.id=String(o.id);save();render();return true}}catch(e){$('#st').textContent='Saved locally'}return false}
+async function updateRemote(n){if(!/^\d+$/.test(String(n.id)))return;try{await api('/'+encodeURIComponent(n.id),{method:'PUT',body:JSON.stringify({name:n.title||'Untitled note',data:apiData(n)})})}catch(e){$('#st').textContent='Saved locally'}}
+async function deleteRemote(n){if(!/^\d+$/.test(String(n.id)))return;try{await api('/'+encodeURIComponent(n.id),{method:'DELETE'})}catch(e){}}
+const save=()=>{try{const{view,tab,...x}=S;localStorage.setItem(K,JSON.stringify(x));$('#st').textContent='Saved'}catch(e){$('#st').textContent='Storage full'}};
+const toast=m=>{const t=$('#toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1900)};
+const cur=()=>S.notes.find(n=>n.id===S.active);
+const list=()=>{const q=$('#q').value.toLowerCase().trim();return S.notes.filter(n=>S.view==='all'||(S.view==='pin'&&n.pinned)||('f:'+n.folder===S.view)).filter(n=>!q||(n.title+' '+n.body).toLowerCase().includes(q)).sort((a,b)=>b.updated-a.updated)};
+function md(t){let h='',inList=false;for(const raw of String(t||'').split('\n')){let l=esc(raw).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/\*(.+?)\*/g,'<i>$1</i>');const li=/^\s*[-*•]\s+(.*)/.exec(l);if(li){if(!inList){h+='<ul>';inList=true}h+='<li>'+li[1]+'</li>';continue}if(inList){h+='</ul>';inList=false}const hd=/^(#{1,3})\s+(.*)/.exec(l);h+=hd?`<h${hd[1].length}>${hd[2]}</h${hd[1].length}>`:l.trim()?`<p>${l}</p>`:''}return h+(inList?'</ul>':'')}
+function render(){
+ document.documentElement.dataset.theme='light';
+ $('#c-all').textContent=S.notes.length;$('#c-pin').textContent=S.notes.filter(n=>n.pinned).length;
+ $$('.nav[data-v]').forEach(b=>b.classList.toggle('on',b.dataset.v===S.view));
+ $('#fl').innerHTML=S.folders.map(f=>`<button class="nav ${S.view==='f:'+f?'on':''}" data-f="${esc(f)}">▱ ${esc(f)}<i>${S.notes.filter(n=>n.folder===f).length}</i></button>`).join('');
+ $$('[data-f]').forEach(b=>b.onclick=()=>{S.view='f:'+b.dataset.f;render()});
+ const L=list();if(!L.some(n=>n.id===S.active))S.active=L[0]?.id;
+ $('#nl').innerHTML=L.map(n=>`<button class="note ${n.id===S.active?'on':''}" data-id="${n.id}"><b>${n.pinned?'★ ':''}${esc(n.title||'Untitled')}</b><small>${new Date(n.updated).toLocaleDateString([],{month:'short',day:'numeric'})} · ${esc(n.folder)}</small></button>`).join('')||'<div class="muted" style="padding:8px 10px;font-size:13px">No notes found</div>';
+ $$('.note').forEach(b=>b.onclick=()=>{S.active=b.dataset.id;$('#side').classList.remove('open');render()});
+ $$('.tab').forEach(b=>b.classList.toggle('on',b.dataset.t===S.tab));
+ const n=cur();$('#pn').textContent=n?.pinned?'★ Pinned':'☆ Pin';
+ if(!n){$('#view').innerHTML='<div class="empty"><div style="font-size:40px">✦</div><h2>No notes yet</h2><button class="btn" id="e1">Create a note</button></div>';$('#e1').onclick=newNote;return}
+ ({write:vWrite,sum:vSum,road:vRoad,chat:vChat})[S.tab](n);
+}
+function touch(n){n.updated=Date.now();$('#st').textContent='Saving…';clearTimeout(touch.t);touch.t=setTimeout(()=>{save();updateRemote(n)},300)}
+const words=t=>t.trim()?t.trim().split(/\s+/).length:0;
+function vWrite(n){
+ $('#view').innerHTML=`<input class="title" id="ti" placeholder="Untitled note" value="${esc(n.title)}"><div class="tools"><select class="ghost" id="fo">${S.folders.map(f=>`<option ${f===n.folder?'selected':''}>${esc(f)}</option>`).join('')}</select><span id="wc"></span><span class="sp"></span><button class="ghost" id="dup">Duplicate</button><button class="ghost" id="cp">Copy</button></div><textarea class="body" id="bd" placeholder="Start writing… then use Summary, Roadmap or Chat to work with AI.">${esc(n.body)}</textarea>`;
+ const wc=()=>$('#wc').textContent=`${words(n.body)} words · ${n.body.length} chars · edited ${new Date(n.updated).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}`;wc();
+ $('#ti').oninput=e=>{n.title=e.target.value;touch(n);$('#nl .on b').textContent=n.title||'Untitled'};
+ $('#bd').oninput=e=>{n.body=e.target.value;touch(n);wc()};
+ $('#fo').onchange=e=>{n.folder=e.target.value;touch(n);render()};
+ $('#dup').onclick=()=>{const c=JSON.parse(JSON.stringify(n));c.id=uid();c.title+=' (copy)';c.updated=Date.now();S.notes.unshift(c);S.active=c.id;save();render();toast('Duplicated')};
+ $('#cp').onclick=()=>navigator.clipboard?.writeText(n.body).then(()=>toast('Copied'),()=>toast('Copy blocked'));
+}
+function localEducationalAi(prompt,json){
+ const note=(prompt.match(/NOTE CONTENT:\n([\s\S]*?)(?:\n\n|$)/)||[])[1]||'';
+ if(json){
+  const goal=(prompt.match(/GOAL:\s*(.+)/)||[])[1]||'Complete your goal';
+  const timeframe=(prompt.match(/TIMEFRAME:\s*(.+)/)||[])[1]||'3 months';
+  const phases=[['Understand','Learn the core concepts and define what success looks like.',['List the skills and resources needed','Choose one beginner-friendly learning resource','Write a simple success checklist'],'A clear learning plan'],['Practice','Build confidence through small, repeatable practice.',['Schedule three focused practice sessions each week','Complete one small exercise after each session','Record questions and review them weekly'],'A completed practice log'],['Create','Apply the learning to a concrete project.',['Break the project into small deliverables','Finish the first working version','Ask a teacher or peer for feedback'],'A working first version'],['Review','Measure progress and decide what to improve next.',['Compare the result with your success checklist','Document what worked and what was difficult','Choose the next challenge'],'A short reflection and next-step plan']];
+  return {title:`Roadmap: ${goal}`,overview:`A practical educational plan for ${goal} over ${timeframe}. Work in small steps, review your progress regularly, and ask for feedback.`,phases:phases.map(([name,pg,tasks,milestone])=>({name,duration:timeframe==='4 weeks'?'1 week':timeframe==='1 year'?'3 months':'2–3 weeks',goal:pg,tasks,milestone}))};
+ }
+ if(prompt.includes('Summarize')){
+  const lines=note.split(/\r?\n/).map(x=>x.trim()).filter(Boolean),bullets=lines.filter(x=>/^[-*•]/.test(x)).map(x=>x.replace(/^[-*•]\s*/,''));
+  return `## Overview\n${lines.find(x=>!/^[-*#]/.test(x))||'This note does not yet contain an overview.'}\n\n## Key Points\n${(bullets.length?bullets:lines.slice(0,4)).map(x=>`- ${x}`).join('\n')||'- No key points identified.'}\n\n## Action Items\n${(bullets.length?bullets:['Review the note and add a specific next step.']).map(x=>`- ${x}`).join('\n')}\n\n## Open Questions\n- What is the next smallest step?`;
+ }
+ const question=(prompt.match(/User:\s*([^\n]*)$/)||[])[1]||'your question';
+ return `## Educational response\n\nFor “${question}”, start by defining the goal, break it into one small step, and check your result. Use the note as your study record, and ask a teacher or trusted peer to review your work.\n\n**Suggested next step:** Write one concrete action you can finish today.`;
+}
+async function ai(prompt,json){
+ try{
+  const r=await fetch('/api/ai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt,json:!!json})});
+  const d=await r.json().catch(()=>({}));
+  if(d.local)return localEducationalAi(prompt,json);
+  if(!r.ok)throw new Error(d.error||'AI request failed');
+  if(!json)return d.text;
+  try{return JSON.parse(d.text.replace(/```json|```/g,'').trim())}catch(e){throw new Error('AI returned invalid JSON')}
+ }catch(e){
+  $('#st').textContent='Educational mode';
+  return localEducationalAi(prompt,json);
+ }
+}
+const ctx=n=>`NOTE TITLE: ${n.title}\nNOTE CONTENT:\n${n.body||'(empty)'}`;
+function vSum(n){
+ $('#view').innerHTML=`<div class="row"><button class="btn" id="gs">✦ ${n.summary?'Regenerate':'Generate'} summary</button>${n.summary?'<button class="ghost" id="ss">Append to note</button>':''}</div><div class="md" id="so">${n.summary?md(n.summary):'<div class="empty">Turn this note or transcript into a structured summary with overview, key points, decisions and action items.</div>'}</div>`;
+ $('#gs').onclick=async e=>{if(!n.body.trim())return toast('Write something first');e.target.disabled=true;e.target.textContent='Summarizing…';
+  try{n.summary=await ai(`Summarize the note below in Markdown with these sections (skip any that don't apply): ## Overview, ## Key Points, ## Decisions, ## Action Items (bullets), ## Open Questions. Be concise and faithful to the text.\n\n${ctx(n)}`);touch(n)}catch(x){toast(x.message||'AI error')}render()};
+ $('#ss')&&($('#ss').onclick=()=>{n.body+='\n\n# Summary\n'+n.summary;touch(n);toast('Added to note')});
+}
+const RP='roadmap';
+function vRoad(n){
+ const r=n.roadmap,tot=r?r.phases.reduce((a,p)=>a+p.tasks.length,0):0,dn=r?r.phases.reduce((a,p)=>a+p.tasks.filter(t=>t.done).length,0):0;
+ $('#view').innerHTML=`<div class="card" style="margin-bottom:22px"><div class="row" style="margin-bottom:10px"><input class="in" id="goal" placeholder="Goal, e.g. Learn Spanish to B2, launch a SaaS, run a marathon…" value="${esc(n.goal||n.title)}"><select class="in" id="tf" style="flex:0 0 150px;min-width:130px">${['4 weeks','3 months','6 months','1 year'].map(o=>`<option ${o===(n.tf||'3 months')?'selected':''}>${o}</option>`).join('')}</select><button class="btn" id="gr">✦ ${r?'Regenerate':'Generate'} roadmap</button></div><div class="muted" style="font-size:13px">The AI also reads this note’s content as context, so add constraints, skills or resources in the Note tab first.</div></div>`+(r?`<h2 style="margin:0 0 4px;letter-spacing:-.03em">${esc(r.title)}</h2><div class="muted">${esc(r.overview)}</div><div class="bar"><div style="width:${tot?dn/tot*100:0}%"></div></div><div class="muted" style="margin:-14px 0 20px;font-size:12px">${dn} of ${tot} tasks done</div><div class="tl">${r.phases.map((p,i)=>`<div class="ph card" data-n="${i+1}"><h3>${esc(p.name)}<span class="dur">${esc(p.duration)}</span></h3><div class="muted" style="margin:4px 0 8px">${esc(p.goal)}</div>${p.tasks.map((t,j)=>`<label class="task ${t.done?'d':''}"><input type="checkbox" data-p="${i}" data-t="${j}" ${t.done?'checked':''}><span>${esc(t.text)}</span></label>`).join('')}${p.milestone?`<div class="ms">◆ Milestone: ${esc(p.milestone)}</div>`:''}</div>`).join('')}</div><div class="row"><button class="ghost" id="rs">Save to note</button><button class="ghost" id="rx">Export roadmap .md</button></div>`:'<div class="empty">Describe a goal and get a phased roadmap with durations, tasks and milestones you can tick off.</div>');
+ $('#gr').onclick=async e=>{const g=$('#goal').value.trim();if(!g)return toast('Enter a goal');n.goal=g;n.tf=$('#tf').value;e.target.disabled=true;e.target.textContent='Planning…';
+  try{const j=await ai(`Create a practical, realistic roadmap. GOAL: ${g}\nTIMEFRAME: ${n.tf}\n${n.body.trim()?'EXTRA CONTEXT FROM USER NOTE:\n'+n.body.slice(0,6000):''}\n\nReturn ONLY JSON: {"title":string,"overview":string (1-2 sentences),"phases":[{"name":string,"duration":string,"goal":string,"tasks":[string],"milestone":string}]}. Use 4-6 phases that together fit the timeframe, 3-5 specific actionable tasks each.`,true);
+   n.roadmap={title:j.title,overview:j.overview,phases:j.phases.map(p=>({name:p.name,duration:p.duration,goal:p.goal,milestone:p.milestone,tasks:(p.tasks||[]).map(t=>({text:String(t),done:false}))}))};touch(n)}catch(x){toast(x.message||'AI error')}render()};
+ $$('input[data-p]').forEach(c=>c.onchange=()=>{r.phases[c.dataset.p].tasks[c.dataset.t].done=c.checked;touch(n);render()});
+ $('#rs')&&($('#rs').onclick=()=>{n.body+='\n\n'+roadMd(r);touch(n);toast('Roadmap added to note')});
+ $('#rx')&&($('#rx').onclick=()=>dl((r.title||'roadmap')+'.md',roadMd(r)));
+}
+const roadMd=r=>`# ${r.title}\n${r.overview}\n\n`+r.phases.map((p,i)=>`## Phase ${i+1}: ${p.name} (${p.duration})\n${p.goal}\n${p.tasks.map(t=>`- [${t.done?'x':' '}] ${t.text}`).join('\n')}\n${p.milestone?`**Milestone:** ${p.milestone}\n`:''}`).join('\n');
+function vChat(n){
+ n.chat=n.chat||[];
+ $('#view').innerHTML=`<div class="chat" id="cm">${n.chat.map(m=>`<div class="msg ${m.r==='u'?'u':'a md'}">${m.r==='u'?esc(m.t):md(m.t)}</div>`).join('')||'<div class="empty">Ask anything about this note — find action items, rewrite a section, brainstorm next steps.</div>'}</div><div class="row"><input class="in" id="ci" placeholder="Ask about this note…"><button class="btn" id="cs">Send</button>${n.chat.length?'<button class="ghost" id="cc">Clear</button>':''}</div>`;
+ const send=async()=>{const t=$('#ci').value.trim();if(!t||busy)return;busy=true;n.chat.push({r:'u',t});$('#cs').disabled=true;$('#cs').textContent='…';
+  try{const h=n.chat.slice(-8,-1).map(m=>(m.r==='u'?'User: ':'Assistant: ')+m.t).join('\n');n.chat.push({r:'a',t:await ai(`You are a helpful writing and planning assistant inside a notepad app. Answer using the note when relevant; use Markdown.\n\n${ctx(n)}\n\nCONVERSATION SO FAR:\n${h}\n\nUser: ${t}`)});touch(n)}catch(x){n.chat.pop();toast(x.message||'AI error')}busy=false;render()};
+ $('#cs').onclick=send;$('#ci').onkeydown=e=>e.key==='Enter'&&send();$('#cc')&&($('#cc').onclick=()=>{n.chat=[];save();render()});$('#ci').focus();
+}
+function dl(name,data){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type:'text/markdown'}));a.download=name.replace(/[\\/:*?"<>|]/g,'-');a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+async function newNote(){const n={id:uid(),title:'Untitled note',body:'',folder:S.view.startsWith('f:')?S.view.slice(2):S.folders[0]||'Personal',pinned:false,updated:Date.now(),chat:[]};S.notes.unshift(n);S.active=n.id;S.tab='write';S.view=S.view.startsWith('f:')?S.view:'all';save();render();$('#ti')?.select();await createRemote(n)}
+$('#nn').onclick=newNote;$('#q').oninput=render;$('#mb').onclick=()=>$('#side').classList.toggle('open');
+$$('.nav[data-v]').forEach(b=>b.onclick=()=>{S.view=b.dataset.v;render()});
+$$('.tab').forEach(b=>b.onclick=()=>{S.tab=b.dataset.t;render()});
+$('#pn').onclick=()=>{const n=cur();if(n){n.pinned=!n.pinned;save();render()}};
+$('#del').onclick=async e=>{const n=cur();if(!n)return;if(!e.target.dataset.s){e.target.dataset.s=1;e.target.textContent='Confirm delete?';setTimeout(()=>{delete e.target.dataset.s;e.target.textContent='Delete'},2500);return}S.notes=S.notes.filter(x=>x!==n);e.target.textContent='Delete';delete e.target.dataset.s;await deleteRemote(n);save();render();toast('Deleted')};
+$('#ex').onclick=()=>{const n=cur();if(n)dl(n.title+'.md',`# ${n.title}\n\n${n.body}${n.summary?'\n\n# Summary\n'+n.summary:''}${n.roadmap?'\n\n'+roadMd(n.roadmap):''}`)};
+$('#af').onclick=()=>{if($('#nf'))return;$('#fl').insertAdjacentHTML('afterbegin','<input class="in" id="nf" placeholder="Folder name, then Enter" maxlength="30" style="margin-bottom:6px">');$('#nf').focus();$('#nf').onkeydown=e=>{if(e.key==='Escape')$('#nf').remove();if(e.key==='Enter'){const f=e.target.value.trim();if(f&&!S.folders.includes(f)){S.folders.push(f);save()}render()}}};
+document.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key==='k'){e.preventDefault();$('#q').focus()}if((e.metaKey||e.ctrlKey)&&e.key==='s'){e.preventDefault();save();toast('Saved')}});
+const brandLogo=$('.logo');brandLogo.textContent='';brandLogo.style.background='transparent';brandLogo.style.overflow='hidden';const logoImg=document.createElement('img');logoImg.src='data:image/png;base64,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';logoImg.alt='NotaAI logo';logoImg.style.cssText='width:100%;height:100%;object-fit:contain;display:block';brandLogo.append(logoImg);
+const brand=$('.brand');[...brand.childNodes].filter(node=>node!==brandLogo&&node.nodeType===3).forEach(node=>node.remove());
+render();
+syncNotes();
+document.title='AI Notepad & Roadmap Maker';
+</script></body></html>
